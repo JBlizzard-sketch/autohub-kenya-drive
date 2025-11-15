@@ -49,6 +49,25 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
+  const { data: relatedProducts } = useQuery({
+    queryKey: ["related-products", product?.brand_id, product?.category_id],
+    queryFn: async () => {
+      if (!product) return [];
+      
+      const { data, error } = await supabase
+        .from("products_final_v3")
+        .select("*")
+        .or(`brand_id.eq.${product.brand_id},category_id.eq.${product.category_id}`)
+        .neq("product_id", product.product_id)
+        .not("image_url", "is", null)
+        .limit(4);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product,
+  });
+
   const handleAddToCart = () => {
     if (product) {
       addToCart({
@@ -223,6 +242,49 @@ const ProductDetail = () => {
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {/* Related Products */}
+          {relatedProducts && relatedProducts.length > 0 && (
+            <div className="mt-12">
+              <h2 className="mb-6">Related Products</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {relatedProducts.map((relatedProduct) => (
+                  <Link
+                    key={relatedProduct.product_id}
+                    to={`/products/${relatedProduct.product_id}`}
+                  >
+                    <Card className="group gradient-card shadow-card hover:shadow-elevated transition-smooth border-border hover:border-primary/50 h-full">
+                      <div className="aspect-square overflow-hidden bg-secondary/50">
+                        {relatedProduct.image_url ? (
+                          <img
+                            src={relatedProduct.image_url}
+                            alt={relatedProduct.part_name || "Product"}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+
+                      <CardContent className="p-4">
+                        <h3 className="font-semibold text-sm mb-1 line-clamp-2">
+                          {relatedProduct.part_name || "Auto Part"}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {relatedProduct.brand_name}
+                        </p>
+                        <span className="text-lg font-bold text-primary">
+                          KES {relatedProduct.price_value?.toLocaleString() || "N/A"}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </main>

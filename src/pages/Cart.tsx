@@ -11,7 +11,7 @@ const Cart = () => {
   const { items, removeFromCart, updateQuantity, total, clearCart } = useCart();
 
   const handleWhatsAppCheckout = () => {
-    const phoneNumber = "254700000000"; // Replace with actual WhatsApp number
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "254700000000";
     
     const itemsList = items
       .map(

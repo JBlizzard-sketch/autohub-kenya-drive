@@ -110,6 +110,9 @@ export const Header = () => {
               <Link to="/products">All Parts</Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
+              <Link to="/categories">Categories</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
               <Link to="/products?category=engine">Engine Parts</Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
@@ -124,3 +127,4 @@ export const Header = () => {
     </header>
   );
 };
+
