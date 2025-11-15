@@ -2,17 +2,27 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Trash2, Plus, Minus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { Separator } from "@/components/ui/separator";
 
 const Cart = () => {
-  // Placeholder - will be replaced with real cart functionality
-  const cartItems: any[] = [];
-  const total = 0;
+  const { items, removeFromCart, updateQuantity, total, clearCart } = useCart();
 
   const handleWhatsAppCheckout = () => {
     const phoneNumber = "254700000000"; // Replace with actual WhatsApp number
-    const message = `Hello! I'd like to order these parts:\n\nTotal: KES ${total.toLocaleString()}`;
+    
+    const itemsList = items
+      .map(
+        (item) =>
+          `${item.quantity}x ${item.part_name} - KES ${(
+            item.price_value * item.quantity
+          ).toLocaleString()}`
+      )
+      .join("\n");
+    
+    const message = `Hello! I'd like to order these parts:\n\n${itemsList}\n\nTotal: KES ${total.toLocaleString()}`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
   };
@@ -22,9 +32,16 @@ const Cart = () => {
       <Header />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="mb-8">Shopping Cart</h1>
+          <div className="flex items-center justify-between mb-8">
+            <h1>Shopping Cart ({items.length} items)</h1>
+            {items.length > 0 && (
+              <Button variant="outline" onClick={clearCart}>
+                Clear Cart
+              </Button>
+            )}
+          </div>
           
-          {cartItems.length === 0 ? (
+          {items.length === 0 ? (
             <Card className="gradient-card shadow-card">
               <CardContent className="p-12 text-center">
                 <h3 className="mb-4">Your cart is empty</h3>
@@ -38,8 +55,83 @@ const Cart = () => {
             </Card>
           ) : (
             <div className="grid lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                {/* Cart items will go here */}
+              <div className="lg:col-span-2 space-y-4">
+                {items.map((item) => (
+                  <Card key={item.product_id} className="gradient-card shadow-card">
+                    <CardContent className="p-4">
+                      <div className="flex gap-4">
+                        <Link to={`/products/${item.product_id}`}>
+                          <div className="w-24 h-24 rounded-lg overflow-hidden bg-secondary/50 flex-shrink-0">
+                            {item.image_url ? (
+                              <img
+                                src={item.image_url}
+                                alt={item.part_name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                                No Image
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+
+                        <div className="flex-1 min-w-0">
+                          <Link to={`/products/${item.product_id}`}>
+                            <h3 className="font-semibold mb-1 hover:text-primary transition-colors">
+                              {item.part_name}
+                            </h3>
+                          </Link>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            {item.brand_name}
+                          </p>
+
+                          <div className="flex items-center justify-between flex-wrap gap-3">
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() =>
+                                  updateQuantity(item.product_id, item.quantity - 1)
+                                }
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-12 text-center font-medium">
+                                {item.quantity}
+                              </span>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() =>
+                                  updateQuantity(item.product_id, item.quantity + 1)
+                                }
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                              <span className="text-lg font-bold text-primary">
+                                KES {(item.price_value * item.quantity).toLocaleString()}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                onClick={() => removeFromCart(item.product_id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
               
               <div>

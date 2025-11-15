@@ -105,6 +105,7 @@ export type Database = {
         Row: {
           cart_id: number
           created_at: string | null
+          session_id: string | null
           status: string | null
           updated_at: string | null
           user_id: string | null
@@ -112,6 +113,7 @@ export type Database = {
         Insert: {
           cart_id?: number
           created_at?: string | null
+          session_id?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -119,6 +121,7 @@ export type Database = {
         Update: {
           cart_id?: number
           created_at?: string | null
+          session_id?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null

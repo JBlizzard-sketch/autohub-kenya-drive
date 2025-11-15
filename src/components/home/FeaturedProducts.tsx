@@ -4,8 +4,11 @@ import { ShoppingCart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
 
 export const FeaturedProducts = () => {
+  const { addToCart } = useCart();
+  
   const { data: products, isLoading } = useQuery({
     queryKey: ["featured-products"],
     queryFn: async () => {
@@ -19,6 +22,18 @@ export const FeaturedProducts = () => {
       return data;
     },
   });
+
+  const handleAddToCart = (e: React.MouseEvent, product: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({
+      product_id: product.product_id,
+      part_name: product.part_name || "Auto Part",
+      brand_name: product.brand_name || "Unknown",
+      price_value: product.price_value || 0,
+      image_url: product.image_url,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -84,7 +99,11 @@ export const FeaturedProducts = () => {
                 </CardContent>
                 
                 <CardFooter className="p-4 pt-0">
-                  <Button className="w-full" size="sm">
+                  <Button 
+                    className="w-full" 
+                    size="sm"
+                    onClick={(e) => handleAddToCart(e, product)}
+                  >
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Add to Cart
                   </Button>
