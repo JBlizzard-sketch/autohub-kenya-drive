@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/home/Hero";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
+import { CarTipsWidget } from "@/components/home/CarTipsWidget";
 import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 
@@ -9,7 +10,8 @@ const Home = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <Hero />
+        <HeroCarousel />
+        <CarTipsWidget />
         <FeaturedCategories />
         <FeaturedProducts />
       </main>
