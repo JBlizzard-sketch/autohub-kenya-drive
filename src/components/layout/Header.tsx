@@ -92,6 +92,12 @@ export const Header = () => {
                 <Link to="/products">Products</Link>
               </Button>
               <Button variant="ghost" className="justify-start" asChild>
+                <Link to="/categories">Categories</Link>
+              </Button>
+              <Button variant="ghost" className="justify-start" asChild>
+                <Link to="/blog">Blog</Link>
+              </Button>
+              <Button variant="ghost" className="justify-start" asChild>
                 <Link to="/auth">Account</Link>
               </Button>
             </nav>
@@ -111,6 +117,9 @@ export const Header = () => {
             </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/categories">Categories</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/blog">Blog</Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/products?category=engine">Engine Parts</Link>
