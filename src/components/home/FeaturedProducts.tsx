@@ -1,10 +1,17 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export const FeaturedProducts = () => {
   const { addToCart } = useCart();
@@ -57,61 +64,80 @@ export const FeaturedProducts = () => {
   }
 
   return (
-    <section className="py-16">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
-          <h2>Featured Products</h2>
-          <Button variant="outline" asChild>
-            <Link to="/products">View All</Link>
+          <div>
+            <h2 className="mb-2">Featured Auto Parts</h2>
+            <p className="text-muted-foreground">High-quality parts for all vehicle makes and models</p>
+          </div>
+          <Button variant="outline" className="hover-scale" asChild>
+            <Link to="/products">
+              View All
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </Button>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products?.map((product) => (
-            <Link to={`/products/${product.product_id}`} key={product.product_id}>
-              <Card className="group gradient-card shadow-card hover:shadow-elevated transition-smooth border-border hover:border-primary/50 h-full">
-                <div className="aspect-square overflow-hidden bg-secondary/50">
-                  {product.image_url ? (
-                    <img
-                      src={product.image_url}
-                      alt={product.part_name || "Product"}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                      No Image
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {products?.map((product) => (
+              <CarouselItem key={product.product_id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                <Link to={`/products/${product.product_id}`}>
+                  <Card className="group gradient-card shadow-card hover:shadow-elevated transition-smooth border-border hover:border-primary/50 h-full overflow-hidden">
+                    <div className="aspect-square overflow-hidden bg-secondary/50 relative">
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.part_name || "Product"}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          No Image
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                  )}
-                </div>
-                
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-sm mb-1 line-clamp-2">
-                    {product.part_name || "Auto Part"}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    {product.brand_name}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-primary">
-                      KES {product.price_value?.toLocaleString() || "N/A"}
-                    </span>
-                  </div>
-                </CardContent>
-                
-                <CardFooter className="p-4 pt-0">
-                  <Button 
-                    className="w-full" 
-                    size="sm"
-                    onClick={(e) => handleAddToCart(e, product)}
-                  >
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to Cart
-                  </Button>
-                </CardFooter>
-              </Card>
-            </Link>
-          ))}
-        </div>
+                    
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                        {product.part_name || "Auto Part"}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {product.brand_name}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-primary">
+                          KES {product.price_value?.toLocaleString() || "N/A"}
+                        </span>
+                      </div>
+                    </CardContent>
+                    
+                    <CardFooter className="p-4 pt-0">
+                      <Button 
+                        className="w-full hover-scale" 
+                        size="sm"
+                        onClick={(e) => handleAddToCart(e, product)}
+                      >
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        Add to Cart
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </Link>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex" />
+          <CarouselNext className="hidden md:flex" />
+        </Carousel>
       </div>
     </section>
   );
