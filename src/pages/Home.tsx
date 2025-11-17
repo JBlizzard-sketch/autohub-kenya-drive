@@ -5,6 +5,8 @@ import { TrustBadges } from "@/components/home/TrustBadges";
 import { CarTipsWidget } from "@/components/home/CarTipsWidget";
 import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { AboutUsSnippet } from "@/components/home/AboutUsSnippet";
 import { CTASection } from "@/components/home/CTASection";
 
 const Home = () => {
@@ -16,6 +18,8 @@ const Home = () => {
         <TrustBadges />
         <FeaturedCategories />
         <FeaturedProducts />
+        <AboutUsSnippet />
+        <TestimonialsSection />
         <CarTipsWidget />
         <CTASection />
       </main>
