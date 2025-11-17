@@ -15,10 +15,12 @@ export const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-lg bg-gradient-orange flex items-center justify-center">
-              <span className="text-xl font-bold text-primary-foreground">AH</span>
-            </div>
+          <Link to="/" className="flex items-center gap-2 hover-scale">
+            <img 
+              src="/src/assets/autohub-logo.png" 
+              alt="AutoHub Kenya" 
+              className="h-10 w-auto"
+            />
             <span className="text-xl font-bold hidden sm:inline">
               Auto<span className="text-primary">Hub</span>
             </span>
