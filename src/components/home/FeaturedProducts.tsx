@@ -1,20 +1,24 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, ArrowRight } from "lucide-react";
+import { ShoppingCart, ArrowRight, MessageCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useState } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselApi,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export const FeaturedProducts = () => {
   const { addToCart } = useCart();
+  const [api, setApi] = useState<CarouselApi>();
   
   const { data: products, isLoading } = useQuery({
     queryKey: ["featured-products"],
@@ -23,7 +27,7 @@ export const FeaturedProducts = () => {
         .from("products_final_v3")
         .select("*")
         .not("image_url", "is", null)
-        .limit(8);
+        .limit(12);
       
       if (error) throw error;
       return data;
@@ -40,6 +44,15 @@ export const FeaturedProducts = () => {
       price_value: product.price_value || 0,
       image_url: product.image_url,
     });
+  };
+
+  const handleWhatsAppOrder = (e: React.MouseEvent, product: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const whatsappNumber = "254700000000";
+    const message = `Hi! I'd like to order:\n\n${product.part_name || "Auto Part"}\nBrand: ${product.brand_name || "Unknown"}\nPrice: KES ${product.price_value?.toLocaleString() || "N/A"}\n\nProduct Link: ${window.location.origin}/products/${product.product_id}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
   };
 
   if (isLoading) {
@@ -80,6 +93,8 @@ export const FeaturedProducts = () => {
         </div>
         
         <Carousel
+          setApi={setApi}
+          plugins={[Autoplay({ delay: 3000, stopOnInteraction: true, stopOnMouseEnter: true })]}
           opts={{
             align: "start",
             loop: true,
@@ -120,14 +135,22 @@ export const FeaturedProducts = () => {
                       </div>
                     </CardContent>
                     
-                    <CardFooter className="p-4 pt-0">
+                    <CardFooter className="p-4 pt-0 flex gap-2">
                       <Button 
-                        className="w-full hover-scale" 
+                        className="flex-1 hover-scale" 
                         size="sm"
                         onClick={(e) => handleAddToCart(e, product)}
                       >
                         <ShoppingCart className="mr-2 h-4 w-4" />
                         Add to Cart
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        className="hover-scale"
+                        onClick={(e) => handleWhatsAppOrder(e, product)}
+                      >
+                        <MessageCircle className="h-4 w-4" />
                       </Button>
                     </CardFooter>
                   </Card>

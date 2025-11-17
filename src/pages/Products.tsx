@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { ShoppingCart, SlidersHorizontal } from "lucide-react";
+import { ShoppingCart, SlidersHorizontal, MessageCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -26,6 +26,8 @@ const Products = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
   const [selectedModel, setSelectedModel] = useState<string>("all");
   const [priceRange, setPriceRange] = useState([0, 50000]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
   
   const { data: brands } = useQuery({
     queryKey: ["brands"],
@@ -53,12 +55,12 @@ const Products = () => {
     enabled: selectedBrand !== "all",
   });
   
-  const { data: products, isLoading } = useQuery({
-    queryKey: ["products", searchQuery, selectedBrand, selectedModel, priceRange],
+  const { data: productsData, isLoading } = useQuery({
+    queryKey: ["products", searchQuery, selectedBrand, selectedModel, priceRange, currentPage],
     queryFn: async () => {
       let query = supabase
         .from("products_final_v3")
-        .select("*")
+        .select("*", { count: "exact" })
         .gte("price_value", priceRange[0])
         .lte("price_value", priceRange[1]);
       
@@ -74,13 +76,18 @@ const Products = () => {
         query = query.eq("model_id", Number(selectedModel));
       }
       
-      query = query.limit(50);
+      const { data, error, count } = await query.range(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage - 1
+      );
       
-      const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return { data, count };
     },
   });
+
+  const products = productsData?.data;
+  const totalPages = productsData?.count ? Math.ceil(productsData.count / itemsPerPage) : 0;
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
@@ -94,11 +101,21 @@ const Products = () => {
     });
   };
 
+  const handleWhatsAppOrder = (e: React.MouseEvent, product: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const whatsappNumber = "254700000000";
+    const message = `Hi! I'd like to order:\n\n${product.part_name || "Auto Part"}\nBrand: ${product.brand_name || "Unknown"}\nPrice: KES ${product.price_value?.toLocaleString() || "N/A"}\n\nProduct Link: ${window.location.origin}/products/${product.product_id}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedBrand("all");
     setSelectedModel("all");
     setPriceRange([0, 50000]);
+    setCurrentPage(1);
   };
 
   const FiltersContent = () => (
@@ -250,14 +267,22 @@ const Products = () => {
                           </div>
                         </CardContent>
                         
-                        <CardFooter className="p-4 pt-0">
+                        <CardFooter className="p-4 pt-0 flex gap-2">
                           <Button 
-                            className="w-full" 
+                            className="flex-1 hover-scale" 
                             size="sm"
                             onClick={(e) => handleAddToCart(e, product)}
                           >
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             Add to Cart
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            className="hover-scale"
+                            onClick={(e) => handleWhatsAppOrder(e, product)}
+                          >
+                            <MessageCircle className="h-4 w-4" />
                           </Button>
                         </CardFooter>
                       </Card>
@@ -271,6 +296,56 @@ const Products = () => {
                     Clear Filters
                   </Button>
                 </Card>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center gap-2 mt-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  
+                  <div className="flex gap-1">
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                          className="w-10"
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
               )}
             </div>
           </div>
