@@ -1,10 +1,10 @@
-import { ShoppingCart, Search, User, Menu } from "lucide-react";
+import { ShoppingCart, User, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { ProductSearchAutocomplete } from "@/components/search/ProductSearchAutocomplete";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,14 +28,7 @@ export const Header = () => {
 
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-xl">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search parts, brands, or models..."
-                className="pl-10 bg-secondary border-border"
-              />
-            </div>
+            <ProductSearchAutocomplete />
           </div>
 
           {/* Navigation Icons */}
@@ -73,14 +66,7 @@ export const Header = () => {
 
         {/* Search Bar - Mobile */}
         <div className="mt-4 md:hidden">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search parts..."
-              className="pl-10 bg-secondary border-border"
-            />
-          </div>
+          <ProductSearchAutocomplete />
         </div>
 
         {/* Mobile Menu */}
