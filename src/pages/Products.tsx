@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { FilterChips } from "@/components/products/FilterChips";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -231,6 +232,32 @@ const Products = () => {
             </aside>
 
             <div className="lg:col-span-3">
+              <FilterChips
+                filters={[
+                  ...(searchQuery ? [{
+                    id: 'search',
+                    label: `Search: "${searchQuery}"`,
+                    onRemove: () => setSearchQuery("")
+                  }] : []),
+                  ...(selectedBrand !== "all" ? [{
+                    id: 'brand',
+                    label: `Brand: ${brands?.find(b => b.brand_id === Number(selectedBrand))?.brand_name}`,
+                    onRemove: () => setSelectedBrand("all")
+                  }] : []),
+                  ...(selectedModel !== "all" ? [{
+                    id: 'model',
+                    label: `Model: ${models?.find(m => m.model_id === Number(selectedModel))?.model_name}`,
+                    onRemove: () => setSelectedModel("all")
+                  }] : []),
+                  ...((priceRange[0] !== 0 || priceRange[1] !== 50000) ? [{
+                    id: 'price',
+                    label: `KES ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}`,
+                    onRemove: () => setPriceRange([0, 50000])
+                  }] : []),
+                ]}
+                onClearAll={clearFilters}
+              />
+
               {isLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[...Array(12)].map((_, i) => (

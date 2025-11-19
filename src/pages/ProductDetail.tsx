@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ShoppingCart, ArrowLeft, Package, Truck, Shield } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Package, Truck, Shield, Heart, MessageCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -20,6 +23,8 @@ import {
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { addToWishlist, isInWishlist } = useWishlist();
+  const { addToRecentlyViewed } = useRecentlyViewed();
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
@@ -68,6 +73,18 @@ const ProductDetail = () => {
     enabled: !!product,
   });
 
+  useEffect(() => {
+    if (product) {
+      addToRecentlyViewed({
+        product_id: product.product_id,
+        part_name: product.part_name || "Auto Part",
+        brand_name: product.brand_name || "Unknown",
+        price_value: product.price_value || 0,
+        image_url: product.image_url,
+      });
+    }
+  }, [product]);
+
   const handleAddToCart = () => {
     if (product) {
       addToCart({
@@ -78,6 +95,26 @@ const ProductDetail = () => {
         image_url: product.image_url,
       });
     }
+  };
+
+  const handleWishlist = () => {
+    if (product) {
+      addToWishlist({
+        product_id: product.product_id,
+        part_name: product.part_name || "Auto Part",
+        brand_name: product.brand_name || "Unknown",
+        price_value: product.price_value || 0,
+        image_url: product.image_url,
+      });
+    }
+  };
+
+  const handleWhatsAppOrder = () => {
+    if (!product) return;
+    const whatsappNumber = "254700000000";
+    const message = `Hi! I'd like to order:\n\n${product.part_name || "Auto Part"}\nBrand: ${product.brand_name || "Unknown"}\nPrice: KES ${product.price_value?.toLocaleString() || "N/A"}\n\nProduct Link: ${window.location.origin}/products/${product.product_id}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
   };
 
   if (isLoading) {
@@ -200,13 +237,34 @@ const ProductDetail = () => {
                 </div>
               </div>
 
+              <div className="flex gap-3">
+                <Button
+                  size="lg"
+                  className="flex-1 shadow-glow hover-scale"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Add to Cart
+                </Button>
+                
+                <Button
+                  size="lg"
+                  variant={isInWishlist(product.product_id) ? "default" : "outline"}
+                  className="hover-scale"
+                  onClick={handleWishlist}
+                >
+                  <Heart className={`h-5 w-5 ${isInWishlist(product.product_id) ? 'fill-current' : ''}`} />
+                </Button>
+              </div>
+
               <Button
                 size="lg"
-                className="w-full shadow-glow"
-                onClick={handleAddToCart}
+                variant="outline"
+                className="w-full hover-scale"
+                onClick={handleWhatsAppOrder}
               >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Order via WhatsApp
               </Button>
 
               {product.description && (
