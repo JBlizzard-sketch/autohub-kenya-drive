@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Menu } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +39,12 @@ export const Header = () => {
               </Link>
             </Button>
             
+            <Button variant="ghost" size="icon" asChild className="hidden md:flex">
+              <Link to="/wishlist">
+                <Heart className="h-5 w-5" />
+              </Link>
+            </Button>
+
             <Button variant="ghost" size="icon" asChild className="relative">
               <Link to="/cart">
                 <ShoppingCart className="h-5 w-5" />
@@ -81,6 +87,9 @@ export const Header = () => {
               </Button>
               <Button variant="ghost" className="justify-start" asChild>
                 <Link to="/categories">Categories</Link>
+              </Button>
+              <Button variant="ghost" className="justify-start" asChild>
+                <Link to="/wishlist">Wishlist</Link>
               </Button>
               <Button variant="ghost" className="justify-start" asChild>
                 <Link to="/blog">Blog</Link>

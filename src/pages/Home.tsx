@@ -9,6 +9,8 @@ import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { AboutUsSnippet } from "@/components/home/AboutUsSnippet";
 import { CTASection } from "@/components/home/CTASection";
 import { CategoryProductCarousel } from "@/components/home/CategoryProductCarousel";
+import { RecentlyViewedProducts } from "@/components/home/RecentlyViewedProducts";
+import { PromotionalBanner } from "@/components/home/PromotionalBanner";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,8 +34,10 @@ const Home = () => {
       <main className="flex-1">
         <HeroCarousel />
         <TrustBadges />
+        <PromotionalBanner />
         <FeaturedCategories />
         <FeaturedProducts />
+        <RecentlyViewedProducts />
         {categories?.map((category) => (
           <CategoryProductCarousel
             key={category.category_id}
