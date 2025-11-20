@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, X, Heart, MessageCircle } from "lucide-react";
+import { ShoppingCart, X, Heart, MessageCircle, Package } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/contexts/CartContext";
 import { Link } from "react-router-dom";
@@ -74,10 +74,15 @@ const Wishlist = () => {
                           src={item.image_url}
                           alt={item.part_name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23222"%3E%3C/rect%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-size="24" fill="%23888"%3ENo Image%3C/text%3E%3C/svg%3E';
+                            e.currentTarget.onerror = null;
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                          No Image
+                          <Package className="h-16 w-16 opacity-30" />
                         </div>
                       )}
                     </div>
