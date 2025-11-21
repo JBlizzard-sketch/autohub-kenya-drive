@@ -27,6 +27,8 @@ export const FeaturedProducts = () => {
         .from("products_final_v3")
         .select("*")
         .not("image_url", "is", null)
+        .not("price_value", "is", null)
+        .order("price_value", { ascending: false })
         .limit(12);
       
       if (error) throw error;
